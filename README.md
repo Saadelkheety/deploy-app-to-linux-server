@@ -56,8 +56,12 @@ Domain: http://ec2-3-121-146-121.eu-central-1.compute.amazonaws.com
  - install postgreSQL `sudo apt-get install postgresql`
  - Make sure to not allow remote connections by check `/etc/postgresql/9.5/main/pg_hba.conf`
  - login as postgresql `sudo su - postgres`, `psql`
- -  Create a new database user named catalog  `CREATE USER catalog;`
- - Create a new database named database_url `CREATE DATABASE database_url WITH owner = catalog;`
+ -  Create a new database user named catalog  `CREATE USER catalog WITH PASSWORD 'catalog';`
+ - give the user access `ALTER USER catalog CREATEDB`
+ - Create a new database named catalog `CREATE DATABASE catalog WITH OWNER catalog;`
+ - Connect to the database `\c catalog`
+ - Revoke all rights `REVOKE ALL ON SCHEMA public FROM public`
+ -  `GRANT ALL ON SCHEMA public TO catalog`
 
 ### Install git
 - Install Git using `sudo apt-get install git`
