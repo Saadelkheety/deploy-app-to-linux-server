@@ -4,7 +4,7 @@ this is a baseline installation of a Linux server and prepare it to host my web 
 ## Server info
 IP address: 3.121.146.121
 SSH port: 2200
-Domain: http://3.121.146.121.xip.io || http://ec2-3-121-146-121.eu-central-1.compute.amazonaws.com
+Domain: http://ec2-3-121-146-121.eu-central-1.compute.amazonaws.com
 
 ## URL to the hosted web application
 
@@ -63,20 +63,36 @@ Domain: http://3.121.146.121.xip.io || http://ec2-3-121-146-121.eu-central-1.com
 - Install Git using `sudo apt-get install git`
 
 ### Configuring Apache
-- enable mod_wsgi `sudo a2enmod wsgi`
-- creating a website for WSGI that will tell Apache the location of python file and setup the file accordingly `sudo nano /etc/apache2/conf-available/wsgi.conf` Add the following line: `WSGIScriptAlias / /var/www/itemcatalog/app.py`
-- edit file `/etc/apache2/sites-enabled/000-default.conf` by adding
-`      ServerAdmin saadelkheety@gmail.com
-        DocumentRoot /var/www/html
-        WSGIScriptAlias / /var/www/itemcatalog/app.wsgi
-
-        <Directory /var/www/yourapplication>
-        WSGIProcessGroup app
-        WSGIApplicationGroup %{GLOBAL}
-        Order deny,allow
-        Allow from all
-        </Directory>
+- create file `/var/www/catalog/catalog.wsgi` to be
+`#!/usr/bin/python3
+import sys
+import logging
+sys.path.insert(0,"/var/www/")
+logging.basicConfig(stream=sys.stderr)
+from catalog import app as application # catalog directory is in sys.path.insert(0,"/var/www/")
 `
+- edit file `/etc/apache2/sites-enabled/000-default.conf` to be
+`      ServerName 3.121.146.121
+        ServerAlias http://ec2-3-121-146-121.eu-central-1.compute.amazonaws.com
+        ServerAdmin SaadElkheety@gmail.com
+        DocumentRoot /var/www/catalog
+        WSGIProcessGroup catalog
+        WSGIDaemonProcess catalog home=/var/www/catalog python-path=/var/www/catalog
+        <Directory /var/www/catalog/>
+                Order allow,deny
+                Allow from all
+        </Directory>
+        Alias /static /var/www/catalog/static
+        <Directory /var/www/catalog/static/>
+                Order allow,deny
+                Allow from all
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        WSGIScriptAlias / /var/www/catalog/catalog.wsgi
+`
+- clone the app into `/var/www/catalog/`
+- rename app.py to __init__.py
 
 
 ## Grader User

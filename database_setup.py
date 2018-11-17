@@ -3,25 +3,28 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_imageattach.entity import Image, image_attachment
 import os
-
 from sqlalchemy import create_engine
-
+from sqlalchemy.orm import sessionmaker
+engine = create_engine("postgresql://catalog:catalog@localhost/catalog")
 Base = declarative_base()
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 
 class User(Base):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
-    picture = Column(String(250))
+    name = Column(String(25000), nullable=False)
+    email = Column(String(25000), nullable=False)
+    picture = Column(String(25000))
 
 
 class Main_Category(Base):
     __tablename__ = 'maincategory'
     id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
+    name = Column(String(2000), nullable=False)
 
     @property
     def serialize(self):
@@ -35,8 +38,8 @@ class Main_Category(Base):
 class Sub_Category(Base):
     __tablename__ = 'subcategory'
     id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
-    description = Column(String(250), nullable=False)
+    name = Column(String(2000), nullable=False)
+    description = Column(String(2500), nullable=False)
     main_id = Column(Integer, ForeignKey('maincategory.id'), nullable=False)
     maincategory = relationship(Main_Category)
     user_id = Column(Integer, ForeignKey('user.id'))

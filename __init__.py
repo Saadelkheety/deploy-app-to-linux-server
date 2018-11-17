@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask import flash
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Main_Category, Sub_Category, User, ItemPicture
-import database_setup
+
+from database_setup import *
+
 from sqlalchemy_imageattach.context import store_context
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 from sqlalchemy_imageattach.context import (pop_store_context,
@@ -38,12 +37,6 @@ app.config.from_mapping(
         SECRET_KEY='dev')
 store = HttpExposedFileSystemStore('itemimages', '/itemimages')
 app.wsgi_app = store.wsgi_middleware(app.wsgi_app)
-
-engine = create_engine("postgresql://catalog@localhost/database_url")
-Base.metadata.bind = engine
-
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 
 # User helper Functions
@@ -297,7 +290,7 @@ def index():
     latest_items = session.query(Sub_Category).order_by(
         Sub_Category.id.desc()).limit(10).all()
     return render_template(
-                            "index.html",
+                            "home.html",
                             main_category=main_category,
                             latest_items=latest_items)
 
@@ -500,6 +493,5 @@ if __name__ == '__main__':
     app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
     app.debug = True
     Base.metadata.create_all(engine)
-    addbasics()
     app.run()
     # app.run(host='0.0.0.0', port=5000)
