@@ -28,7 +28,7 @@ sightengine==1.4.0
 six==1.11.0
 SQLAlchemy==1.2.10
 SQLAlchemy-ImageAttach==1.1.0
-urllib3==1.23
+urllib3==1.26.5
 Wand==0.4.4
 webencodings==0.5.1
 Werkzeug==0.14.1
